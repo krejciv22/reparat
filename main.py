@@ -16,6 +16,10 @@ height = 1080
 enemy_spawn_timer = 0
 enemy_spawn_speed = 250  # Každé 3 sekundy 
 
+zacatek = False
+
+    
+
 # Obrázky
 window = pygame.display.set_mode((width, height))
 background_img = pygame.image.load("images/background.jpg")
@@ -23,6 +27,10 @@ background_img = pygame.transform.scale(background_img, (width, height))
 
 first_img = pygame.image.load("images/first.jpg")
 first_img = pygame.transform.scale(first_img, (width, height))
+
+
+
+
 
 # Hrdina
 hero_img = pygame.image.load("images/hero.png")
@@ -62,9 +70,17 @@ hp_bar_height = 20
 hp_bar_fill_color = (255, 0, 0)
 hp_bar_background_color = (128, 128, 128)
 
+truhla_img = pygame.image.load("images/truhla.png")
+truhla_img = pygame.transform.scale(truhla_img, (40, 40))
+truhla_x = 40
+truhla_y = 40
+truhla_rect = truhla_x, truhla_y
+
+
+
 window.blit(first_img, (0, 0))
 pygame.display.update()
-time.sleep(5)  # Počkej 5 sekund
+time.sleep(1)  # Počkej 5 sekund
 
 
 enemy2_img = pygame.image.load("images/enemy2.png")
@@ -117,7 +133,7 @@ def check_bullet_enemy_collision(hero_hp):
 
     for enemy in enemies:
         enemy_x, enemy_y, enemy_type = enemy
-        dx = hero_x + hero_img.get_width() // 2 - enemy_x - enemy_type.get_width() // 2
+        dx = hero_x + hero_img.get_width() // 2 - enemy_x - enemy_type.get_width() // 2       
         dy = hero_y + hero_img.get_height() // 2 - enemy_y - enemy_type.get_height() // 2
         dist = math.sqrt(dx**2 + dy**2)
         enemy_speed = 2
@@ -143,6 +159,13 @@ enemy_spawn_timer = 0
 enemy_spawn_speed = 250  # Každé 3 sekundy (60 snímků/s)
 enemy_spawn_interval = 600  # Každých 10 sekund (60 snímků/s * 10)
 
+
+        
+
+
+
+
+
 # Hlavní smyčka hry
 running = True
 clock = pygame.time.Clock()
@@ -152,18 +175,18 @@ while True:
             pygame.quit()
             sys.exit()
         elif event.type == MOUSEBUTTONDOWN:
-            # Při stisknutí tlačítka myši vytvoř novou kouli
             mouse_x, mouse_y = pygame.mouse.get_pos()
             bullet_x = hero_x + hero_img.get_width() // 2
             bullet_y = hero_y + hero_img.get_height() // 2
             angle = math.atan2(mouse_y - bullet_y, mouse_x - bullet_x)
-            bullet_speed = 7
+            bullet_speed = 5
             bullet_dx = bullet_speed * math.cos(angle)
             bullet_dy = bullet_speed * math.sin(angle)
-            bullets.append((bullet_x, bullet_y, bullet_dx, bullet_dy))
-            
-   
+            bullets.append((bullet_x, bullet_y, bullet_dx, bullet_dy))#Při stisknutí tlačítka myši vytvoř novou kouli
         
+            
+            
+            
     # Generování nepřátel
     enemy_spawn_timer += 1
     if enemy_spawn_timer >= enemy_spawn_speed:
@@ -204,6 +227,41 @@ while True:
                 bullet_dy = bullet_speed * math.sin(angle_rad)
                 bullets.append((bullet_x, bullet_y, bullet_dx, bullet_dy))
 
+    
+    
+    
+    
+    if truhla_rect.colliderect(hero_rect):        
+        for angle in range(0 , 50, 10):
+            bullet_x = hero_x + hero_img.get_width() // 2
+            bullet_y = hero_y + hero_img.get_height() // 2
+            angle_rad = math.radians(angle)
+            bullet_speed = 10
+            bullet_dx = bullet_speed * math.cos(angle_rad)
+            bullet_dy = bullet_speed * math.sin(angle_rad)
+            bullets.append((bullet_x, bullet_y, bullet_dx, bullet_dy))
+    
+    
+    
+    if hero_xp >= 500:
+        zacatek = True
+        if  zacatek == True:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            bullet_x = hero_x + hero_img.get_width() // 2
+            bullet_y = hero_y + hero_img.get_height() // 2
+            angle = math.atan2(mouse_y - bullet_y, mouse_x - bullet_x)
+            bullet_speed = 5
+            bullet_dx = bullet_speed * math.cos(angle)
+            bullet_dy = bullet_speed * math.sin(angle)
+            bullets.append((bullet_x, bullet_y, bullet_dx, bullet_dy))
+    
+     
+    
+    
+    
+    
+    
+    
     # Vykreslení
     window.blit(background_img, (0, 0))
     for bullet in bullets:
@@ -224,6 +282,27 @@ while True:
     if hero_xp >= xp_per_level * hero_level:
         hero_level += 1
         hero_xp = 0
+        
+       
+        
+        
+        
+        
+        
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     # Vykreslení textu XP Baru
     font = pygame.font.Font(None, 30)
@@ -242,7 +321,9 @@ while True:
     hp_bar_current_rect = pygame.Rect(width - 20 - hp_bar_width, 20, hp_bar_width_current, hp_bar_height)
     pygame.draw.rect(window, hp_bar_background_color, hp_bar_rect)
     pygame.draw.rect(window, hp_bar_fill_color, hp_bar_current_rect)
-
+    
+    window.blit(truhla_img, (500, 500))
+    
     # Vykreslení textu HP Baru
     hp_text = font.render("HP Bar", True, (255, 255, 255))
     window.blit(hp_text, (width - 20 - hp_bar_width, 50))
